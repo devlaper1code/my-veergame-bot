@@ -1,8 +1,7 @@
 const BOT_TOKEN = process.env.BOT_TOKEN;
 
 const CHANNEL_ID =
-  process.env.CHANNEL_ID ||
-  "-1002308592775";
+  process.env.CHANNEL_ID || "-1002308592775";
 
 const CHANNEL_LINK =
   process.env.CHANNEL_LINK ||
@@ -21,10 +20,6 @@ const MESSAGE_TEXT =
   process.env.MESSAGE_TEXT ||
   "🎉 Welcome!\n\nThank you for joining our channel.";
 
-const APK_CAPTION =
-  process.env.APK_CAPTION ||
-  "📦 APK File";
-
 
 // ==========================================
 // TELEGRAM API
@@ -36,7 +31,7 @@ async function telegram(method, body) {
 
     return {
       ok: false,
-      description: "BOT_TOKEN is missing",
+      description: "BOT_TOKEN is missing"
     };
   }
 
@@ -45,12 +40,10 @@ async function telegram(method, body) {
       `https://api.telegram.org/bot${BOT_TOKEN}/${method}`,
       {
         method: "POST",
-
         headers: {
-          "content-type": "application/json",
+          "Content-Type": "application/json"
         },
-
-        body: JSON.stringify(body),
+        body: JSON.stringify(body)
       }
     );
 
@@ -72,61 +65,50 @@ async function telegram(method, body) {
 
     return {
       ok: false,
-      description: error.message,
+      description: error.message
     };
   }
 }
 
 
 // ==========================================
-// SEND WELCOME CONTENT
+// SEND ALL WELCOME CONTENT
 // ==========================================
 
 async function sendWelcome(chatId) {
 
   console.log(
-    "📤 Sending welcome content to:",
+    "🚀 Sending welcome content to:",
     chatId
   );
 
 
   // ========================================
-  // WELCOME MESSAGE
+  // 1. WELCOME MESSAGE
   // ========================================
 
-  const messageResult =
-    await telegram(
-      "sendMessage",
-      {
-        chat_id: chatId,
+  const messageResult = await telegram(
+    "sendMessage",
+    {
+      chat_id: chatId,
 
-        text:
-          MESSAGE_TEXT +
-          "\n\n📢 Main Channel:\n" +
-          CHANNEL_LINK,
+      text:
+        MESSAGE_TEXT +
+        "\n\n📢 Main Channel:\n" +
+        CHANNEL_LINK,
 
-        disable_web_page_preview: false,
-      }
-    );
+      disable_web_page_preview: false
+    }
+  );
 
-
-  if (!messageResult.ok) {
-
-    console.error(
-      "❌ Welcome message failed:",
-      JSON.stringify(messageResult)
-    );
-
-  } else {
-
-    console.log(
-      "✅ Welcome message sent"
-    );
-  }
+  console.log(
+    "✅ Welcome message:",
+    JSON.stringify(messageResult)
+  );
 
 
   // ========================================
-  // VIDEO
+  // 2. VIDEO
   // ========================================
 
   if (VIDEO_FILE_ID) {
@@ -135,30 +117,18 @@ async function sendWelcome(chatId) {
       "🎥 Sending video..."
     );
 
-    const videoResult =
-      await telegram(
-        "sendVideo",
-        {
-          chat_id: chatId,
+    const videoResult = await telegram(
+      "sendVideo",
+      {
+        chat_id: chatId,
+        video: VIDEO_FILE_ID
+      }
+    );
 
-          video: VIDEO_FILE_ID,
-        }
-      );
-
-
-    if (!videoResult.ok) {
-
-      console.error(
-        "❌ Video failed:",
-        JSON.stringify(videoResult)
-      );
-
-    } else {
-
-      console.log(
-        "✅ Video sent"
-      );
-    }
+    console.log(
+      "✅ Video result:",
+      JSON.stringify(videoResult)
+    );
 
   } else {
 
@@ -169,7 +139,7 @@ async function sendWelcome(chatId) {
 
 
   // ========================================
-  // VOICE
+  // 3. VOICE
   // ========================================
 
   if (VOICE_FILE_ID) {
@@ -178,30 +148,18 @@ async function sendWelcome(chatId) {
       "🎤 Sending voice..."
     );
 
-    const voiceResult =
-      await telegram(
-        "sendVoice",
-        {
-          chat_id: chatId,
+    const voiceResult = await telegram(
+      "sendVoice",
+      {
+        chat_id: chatId,
+        voice: VOICE_FILE_ID
+      }
+    );
 
-          voice: VOICE_FILE_ID,
-        }
-      );
-
-
-    if (!voiceResult.ok) {
-
-      console.error(
-        "❌ Voice failed:",
-        JSON.stringify(voiceResult)
-      );
-
-    } else {
-
-      console.log(
-        "✅ Voice sent"
-      );
-    }
+    console.log(
+      "✅ Voice result:",
+      JSON.stringify(voiceResult)
+    );
 
   } else {
 
@@ -212,7 +170,7 @@ async function sendWelcome(chatId) {
 
 
   // ========================================
-  // APK
+  // 4. APK
   // ========================================
 
   if (APK_FILE_ID) {
@@ -221,32 +179,19 @@ async function sendWelcome(chatId) {
       "📦 Sending APK..."
     );
 
-    const apkResult =
-      await telegram(
-        "sendDocument",
-        {
-          chat_id: chatId,
+    const apkResult = await telegram(
+      "sendDocument",
+      {
+        chat_id: chatId,
+        document: APK_FILE_ID,
+        caption: "📦 APK File"
+      }
+    );
 
-          document: APK_FILE_ID,
-
-          caption: APK_CAPTION,
-        }
-      );
-
-
-    if (!apkResult.ok) {
-
-      console.error(
-        "❌ APK failed:",
-        JSON.stringify(apkResult)
-      );
-
-    } else {
-
-      console.log(
-        "✅ APK sent"
-      );
-    }
+    console.log(
+      "✅ APK result:",
+      JSON.stringify(apkResult)
+    );
 
   } else {
 
@@ -257,7 +202,7 @@ async function sendWelcome(chatId) {
 
 
   console.log(
-    "✅ Welcome process completed:",
+    "🎉 ALL CONTENT SENT TO:",
     chatId
   );
 }
@@ -269,24 +214,18 @@ async function sendWelcome(chatId) {
 
 async function checkMembership(userId) {
 
-  console.log(
-    "🔍 Checking membership:",
-    userId
-  );
-
   return await telegram(
     "getChatMember",
     {
       chat_id: CHANNEL_ID,
-
-      user_id: userId,
+      user_id: userId
     }
   );
 }
 
 
 // ==========================================
-// HANDLE /START
+// /START
 // ==========================================
 
 async function handleStart(
@@ -295,17 +234,8 @@ async function handleStart(
 ) {
 
   console.log(
-    "🚀 /start received"
-  );
-
-  console.log(
-    "User ID:",
+    "▶️ /start received:",
     userId
-  );
-
-  console.log(
-    "Chat ID:",
-    chatId
   );
 
 
@@ -314,14 +244,10 @@ async function handleStart(
 
 
   console.log(
-    "Membership result:",
+    "Membership:",
     JSON.stringify(membership)
   );
 
-
-  // ========================================
-  // MEMBERSHIP API ERROR
-  // ========================================
 
   if (!membership.ok) {
 
@@ -332,7 +258,7 @@ async function handleStart(
 
         text:
           "⚠️ Membership check failed.\n\n" +
-          "Please try /start again.",
+          "Please try again."
       }
     );
 
@@ -342,12 +268,6 @@ async function handleStart(
 
   const status =
     membership.result.status;
-
-
-  console.log(
-    "👤 User status:",
-    status
-  );
 
 
   const joined =
@@ -362,11 +282,6 @@ async function handleStart(
 
   if (!joined) {
 
-    console.log(
-      "❌ User has not joined channel"
-    );
-
-
     await telegram(
       "sendMessage",
       {
@@ -374,13 +289,10 @@ async function handleStart(
 
         text:
           "👋 Welcome!\n\n" +
-
-          "📢 First join our channel:\n" +
+          "Please join our main channel first:\n\n" +
           CHANNEL_LINK +
-
           "\n\n" +
-
-          "✅ After joining, send /start again.",
+          "After joining, you will receive the content automatically."
       }
     );
 
@@ -389,251 +301,10 @@ async function handleStart(
 
 
   // ========================================
-  // JOINED
+  // ALREADY JOINED
   // ========================================
-
-  console.log(
-    "✅ User is a channel member"
-  );
-
 
   await sendWelcome(chatId);
-}
-
-
-// ==========================================
-// HANDLE JOIN REQUEST
-// ==========================================
-
-async function handleJoinRequest(
-  request
-) {
-
-  const requestChat =
-    request.chat;
-
-  const user =
-    request.from;
-
-
-  console.log(
-    "📥 JOIN REQUEST:",
-    JSON.stringify(request)
-  );
-
-
-  if (!requestChat || !user) {
-
-    console.log(
-      "⚠️ Invalid join request"
-    );
-
-    return;
-  }
-
-
-  const isOurChannel =
-    String(requestChat.id) ===
-    String(CHANNEL_ID);
-
-
-  if (!isOurChannel) {
-
-    console.log(
-      "⚠️ Join request is for another channel"
-    );
-
-    return;
-  }
-
-
-  if (user.is_bot) {
-
-    console.log(
-      "⚠️ Ignoring bot user"
-    );
-
-    return;
-  }
-
-
-  console.log(
-    "👤 New join request:",
-    user.id
-  );
-
-
-  // ========================================
-  // APPROVE
-  // ========================================
-
-  const approved =
-    await telegram(
-      "approveChatJoinRequest",
-      {
-        chat_id: CHANNEL_ID,
-
-        user_id: user.id,
-      }
-    );
-
-
-  console.log(
-    "Approval result:",
-    JSON.stringify(approved)
-  );
-
-
-  if (!approved.ok) {
-
-    console.error(
-      "❌ Could not approve user:",
-      JSON.stringify(approved)
-    );
-
-    return;
-  }
-
-
-  console.log(
-    "✅ JOIN REQUEST APPROVED:",
-    user.id
-  );
-
-
-  // ========================================
-  // TELL USER TO START
-  // ========================================
-
-  const notify =
-    await telegram(
-      "sendMessage",
-      {
-        chat_id: user.id,
-
-        text:
-          "✅ Your channel join request has been approved!\n\n" +
-          "Send /start here to receive your content.",
-      }
-    );
-
-
-  console.log(
-    "Approval notification:",
-    JSON.stringify(notify)
-  );
-}
-
-
-// ==========================================
-// HANDLE CHANNEL MEMBER UPDATE
-// ==========================================
-
-async function handleChatMember(
-  memberUpdate
-) {
-
-  console.log(
-    "👥 CHAT MEMBER UPDATE:",
-    JSON.stringify(memberUpdate)
-  );
-
-
-  const channel =
-    memberUpdate.chat;
-
-  const newMember =
-    memberUpdate.new_chat_member;
-
-  const oldMember =
-    memberUpdate.old_chat_member;
-
-
-  if (!channel || !newMember) {
-    return;
-  }
-
-
-  const joinedUser =
-    newMember.user;
-
-
-  if (!joinedUser) {
-    return;
-  }
-
-
-  if (joinedUser.is_bot) {
-    return;
-  }
-
-
-  const newStatus =
-    newMember.status;
-
-  const oldStatus =
-    oldMember?.status;
-
-
-  console.log(
-    "Channel:",
-    channel.id
-  );
-
-  console.log(
-    "Old status:",
-    oldStatus
-  );
-
-  console.log(
-    "New status:",
-    newStatus
-  );
-
-
-  const isOurChannel =
-    String(channel.id) ===
-    String(CHANNEL_ID);
-
-
-  if (!isOurChannel) {
-    return;
-  }
-
-
-  const memberStatuses = [
-    "member",
-    "administrator",
-    "creator",
-  ];
-
-
-  const becameMember =
-    memberStatuses.includes(newStatus) &&
-    !memberStatuses.includes(oldStatus);
-
-
-  if (!becameMember) {
-    return;
-  }
-
-
-  console.log(
-    "🎉 NEW APPROVED MEMBER:",
-    joinedUser.id
-  );
-
-
-  /*
-   * IMPORTANT:
-   *
-   * We don't automatically send the
-   * welcome files here because the user
-   * may not have started the bot chat.
-   *
-   * The user sends /start and then
-   * membership is checked.
-   */
 }
 
 
@@ -675,7 +346,7 @@ export default async function handler(
 
 
   // ========================================
-  // CHANNEL CHECK
+  // CHANNEL ID CHECK
   // ========================================
 
   if (!CHANNEL_ID) {
@@ -695,61 +366,30 @@ export default async function handler(
 
 
     console.log(
-      "================================"
-    );
-
-    console.log(
-      "📩 TELEGRAM UPDATE"
-    );
-
-    console.log(
+      "📩 Telegram update:",
       JSON.stringify(update)
     );
 
-    console.log(
-      "================================"
-    );
-
 
     // ======================================
-    // NORMAL MESSAGE
+    // /START
     // ======================================
 
-    if (update.message) {
-
-      const message =
-        update.message;
-
+    if (
+      update.message?.text?.startsWith("/start")
+    ) {
 
       const chatId =
-        message.chat?.id;
-
+        update.message.chat.id;
 
       const userId =
-        message.from?.id;
+        update.message.from.id;
 
 
-      const text =
-        message.text || "";
-
-
-      console.log(
-        "💬 MESSAGE:",
-        text
+      await handleStart(
+        chatId,
+        userId
       );
-
-
-      if (
-        chatId &&
-        userId &&
-        text.startsWith("/start")
-      ) {
-
-        await handleStart(
-          chatId,
-          userId
-        );
-      }
     }
 
 
@@ -757,28 +397,187 @@ export default async function handler(
     // JOIN REQUEST
     // ======================================
 
-    if (update.chat_join_request) {
+    if (
+      update.chat_join_request
+    ) {
 
-      await handleJoinRequest(
-        update.chat_join_request
+      const request =
+        update.chat_join_request;
+
+
+      const channel =
+        request.chat;
+
+
+      const user =
+        request.from;
+
+
+      console.log(
+        "📥 JOIN REQUEST:",
+        JSON.stringify(request)
       );
+
+
+      // ====================================
+      // CHECK OUR CHANNEL
+      // ====================================
+
+      const isOurChannel =
+        channel &&
+        String(channel.id) ===
+        String(CHANNEL_ID);
+
+
+      if (
+        isOurChannel &&
+        user &&
+        !user.is_bot
+      ) {
+
+        console.log(
+          "👤 New join request:",
+          user.id
+        );
+
+
+        // ==================================
+        // APPROVE REQUEST
+        // ==================================
+
+        const approved =
+          await telegram(
+            "approveChatJoinRequest",
+            {
+              chat_id: CHANNEL_ID,
+              user_id: user.id
+            }
+          );
+
+
+        console.log(
+          "✅ Approval result:",
+          JSON.stringify(approved)
+        );
+
+
+        // ==================================
+        // DIRECTLY SEND CONTENT
+        // ==================================
+
+        if (approved.ok) {
+
+          console.log(
+            "🎉 USER APPROVED:",
+            user.id
+          );
+
+
+          // NO "SEND /START" MESSAGE
+          // DIRECTLY SEND CONTENT
+
+          await sendWelcome(
+            user.id
+          );
+
+        } else {
+
+          console.error(
+            "❌ Could not approve:",
+            JSON.stringify(approved)
+          );
+        }
+      }
     }
 
 
     // ======================================
-    // CHAT MEMBER
+    // CHANNEL MEMBER UPDATE
     // ======================================
 
-    if (update.chat_member) {
+    if (
+      update.chat_member &&
+      update.chat_member.chat &&
+      update.chat_member.new_chat_member
+    ) {
 
-      await handleChatMember(
-        update.chat_member
+      const memberUpdate =
+        update.chat_member;
+
+
+      const joinedUser =
+        memberUpdate
+          .new_chat_member
+          .user;
+
+
+      const newStatus =
+        memberUpdate
+          .new_chat_member
+          .status;
+
+
+      const oldStatus =
+        memberUpdate
+          .old_chat_member?.status;
+
+
+      const isOurChannel =
+        String(
+          memberUpdate.chat.id
+        ) ===
+        String(CHANNEL_ID);
+
+
+      const memberStatuses = [
+        "member",
+        "administrator",
+        "creator"
+      ];
+
+
+      const becameMember =
+        isOurChannel &&
+        memberStatuses.includes(
+          newStatus
+        ) &&
+        !memberStatuses.includes(
+          oldStatus
+        );
+
+
+      console.log(
+        "Channel member update:",
+        JSON.stringify(memberUpdate)
       );
+
+
+      // IMPORTANT:
+      // Don't send duplicate welcome here.
+      //
+      // Join-request approval already
+      // sends the welcome content above.
+
+      if (
+        becameMember &&
+        joinedUser &&
+        !joinedUser.is_bot
+      ) {
+
+        console.log(
+          "ℹ️ Member approved:",
+          joinedUser.id
+        );
+
+        console.log(
+          "ℹ️ Welcome was already handled by join request."
+        );
+      }
     }
 
 
     // ======================================
-    // ALWAYS RETURN 200
+    // SUCCESS
     // ======================================
 
     return res
@@ -789,13 +588,15 @@ export default async function handler(
   } catch (error) {
 
     console.error(
-      "❌ WEBHOOK ERROR:",
+      "❌ Webhook error:",
       error
     );
 
 
     return res
-      .status(200)
-      .send("OK");
+      .status(500)
+      .send(
+        "Webhook error"
+      );
   }
 }
